@@ -1,4 +1,5 @@
 import re
+import unittest
 """
 17/05/2018, 22:18 - Person1: IMG-1.jpg (file attached)
 17/05/2018, 22:18 - Person2: IMG-2.jpg (file attached)
@@ -122,13 +123,82 @@ class Data:
         for message in self.messages:
             if message.sender not in word_list_by_sender:
                 word_list_by_sender[message.sender] = {}
-                for word in message.content.split():
-                    if word not in word_list_by_sender[message.sender]:
-                        word_list_by_sender[message.sender][word] = 1
-                    else:
-                        word_list_by_sender[message.sender][word] += 1
+
+            for word in message.content.split():
+                if word not in word_list_by_sender[message.sender]:
+                    word_list_by_sender[message.sender][word] = 1
+                else:
+                    word_list_by_sender[message.sender][word] += 1
 
         return word_list_by_sender
+
+
+class DataTest(unittest.TestCase):
+    def setUp(self):
+        first_message = Message(
+            '17/05/2018',
+            '22:18',
+            'Person1',
+            'Blah bleh bah')
+        second_message = Message(
+            '17/05/2018',
+            '22:20',
+            'Person2',
+            'Boo bah blin')
+        third_message = Message(
+            '17/05/2018',
+            '22:21',
+            'Person1',
+            'Bah booh bee')
+        self.messages = [first_message, second_message, third_message]
+
+    def test_word_counts_returns_integer(self):
+        data = Data(self.messages)
+        self.assertTrue(data.words_count() == 9)
+
+    def test_word_counts_by_sender_returns_dictionary(self):
+        data = Data(self.messages)
+        expected = {
+            'Person1': 6,
+            'Person2': 3
+        }
+
+        self.assertEqual(data.words_count_by_sender(), expected)
+
+    def test_word_density_returns_dictionary(self):
+        data = Data(self.messages)
+        expected = {
+            'Blah': 1,
+            'bleh': 1,
+            'bah': 2,
+            'Bah': 1,
+            'booh': 1,
+            'bee': 1,
+            'Boo': 1,
+            'blin': 1
+        }
+
+        self.assertEqual(data.words_density(), expected)
+
+    def test_word_density_by_sender_returns_dictionary(self):
+        data = Data(self.messages)
+        expected = {
+            'Person1': {
+                'Blah': 1,
+                'bleh': 1,
+                'bah': 1,
+                'Bah': 1,
+                'booh': 1,
+                'bee': 1,
+            },
+            'Person2': {
+                'Boo': 1,
+                'bah': 1,
+                'blin': 1
+            }
+        }
+
+        self.assertEqual(data.words_density_by_sender(), expected)
 
 
 def main():
@@ -149,3 +219,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    unittest.main()
