@@ -92,6 +92,18 @@ class Data:
 
         return total_count
 
+    def words_count_by_sender(self):
+        total_count_by_sender = {}
+
+        for message in self.messages:
+            message_words_count = len(message.content.split())
+            if message.sender not in total_count_by_sender:
+                total_count_by_sender[message.sender] = message_words_count
+            else:
+                total_count_by_sender[message.sender] += message_words_count
+
+        return total_count_by_sender
+
     def words_density(self):
         word_list = {}
 
@@ -103,6 +115,20 @@ class Data:
                     word_list[word] += 1
 
         return word_list
+
+    def words_density_by_sender(self):
+        word_list_by_sender = {}
+
+        for message in self.messages:
+            if message.sender not in word_list_by_sender:
+                word_list_by_sender[message.sender] = {}
+                for word in message.content.split():
+                    if word not in word_list_by_sender[message.sender]:
+                        word_list_by_sender[message.sender][word] = 1
+                    else:
+                        word_list_by_sender[message.sender][word] += 1
+
+        return word_list_by_sender
 
 
 def main():
@@ -117,7 +143,9 @@ def main():
 
     data = Data(clean_messages)
     print(data.words_count())
+    print(data.words_count_by_sender())
     print(data.words_density())
+    print(data.words_density_by_sender())
 
 if __name__ == "__main__":
     main()
