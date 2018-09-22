@@ -92,6 +92,18 @@ class Data:
 
         return total_count
 
+    def words_density(self):
+        word_list = {}
+
+        for message in self.messages:
+            for word in message.content.split():
+                if word not in word_list:
+                    word_list[word] = 1
+                else:
+                    word_list[word] += 1
+
+        return word_list
+
 
 def main():
     messages = Messages('./example.txt').read()
@@ -105,6 +117,7 @@ def main():
 
     data = Data(clean_messages)
     print(data.words_count())
+    print(data.words_density())
 
 if __name__ == "__main__":
     main()
