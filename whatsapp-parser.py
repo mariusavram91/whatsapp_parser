@@ -105,6 +105,23 @@ class Data:
 
         return total_count_by_sender
 
+    def words_count_by_sender_by_date(self):
+        total_count_by_sender_by_date = {}
+
+        for message in self.messages:
+            if message.sender not in total_count_by_sender_by_date:
+                total_count_by_sender_by_date[message.sender] = {}
+
+            message_words_count = len(message.content.split())
+            if message.date not in total_count_by_sender_by_date:
+                total_count_by_sender_by_date[
+                    message.sender][message.date] = message_words_count
+            else:
+                total_count_by_sender_by_date[
+                    message.sender][message.date] += message_words_count
+
+        return total_count_by_sender_by_date
+
     def words_density(self):
         word_list = {}
 
@@ -146,7 +163,7 @@ class DataTest(unittest.TestCase):
             'Person2',
             'Boo bah blin')
         third_message = Message(
-            '17/05/2018',
+            '18/05/2018',
             '22:21',
             'Person1',
             'Bah booh bee')
@@ -164,6 +181,20 @@ class DataTest(unittest.TestCase):
         }
 
         self.assertEqual(data.words_count_by_sender(), expected)
+
+    def test_word_counts_by_sender_by_date_returns_dictionary(self):
+        data = Data(self.messages)
+        expected = {
+            'Person1': {
+                '17/05/2018': 3,
+                '18/05/2018': 3
+            },
+            'Person2': {
+                '17/05/2018': 3
+            }
+        }
+
+        self.assertEqual(data.words_count_by_sender_by_date(), expected)
 
     def test_word_density_returns_dictionary(self):
         data = Data(self.messages)
@@ -214,6 +245,7 @@ def main():
     data = Data(clean_messages)
     print(data.words_count())
     print(data.words_count_by_sender())
+    print(data.words_count_by_sender_by_date())
     print(data.words_density())
     print(data.words_density_by_sender())
 
